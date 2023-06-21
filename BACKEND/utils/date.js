@@ -4,12 +4,12 @@
  * @returns {string} The formatted date string.
  */
 const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-  
-    return `${year}-${month}-${day}`;
-  };
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+};
   
   /**
    * Get today's date and the date 30 days ago.
@@ -20,20 +20,17 @@ const formatDate = (date) => {
   const checkDuration = () => {
     const today = new Date();
     const currentHour = today.getHours();
-  
+    
     // If the current hour is before or at 12 PM, consider it as the previous day.
-    if (currentHour <= 12) {
-      today.setDate(today.getDate() - 1);
-    }
+    const previousDay = new Date(today);
+    previousDay.setDate(previousDay.getDate() - (currentHour <= 12 ? 1 : 0));
   
     const formattedToday = formatDate(today);
-  
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(today.getDate() - 30);
-    const formattedThirtyDaysAgo = formatDate(thirtyDaysAgo);
-  
+    const formattedThirtyDaysAgo = formatDate(new Date(previousDay.getTime() - 30 * 24 * 60 * 60 * 1000));
+    
     return { today: formattedToday, thirtyDaysAgo: formattedThirtyDaysAgo };
   };
+  
   
   
 export default 
