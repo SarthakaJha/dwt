@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import axios from "axios";
 import Product from "../models/productModel.js";
 import Project from "../models/projectModel.js";
-import { getTodayAndThirtDaysAgo } from "../utils/dateUtils.js";
+import { getDurationData } from "../utils/dateUtils.js";
 
 export const createProduct = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
@@ -50,7 +50,7 @@ export const generateProductReport = asyncHandler(async (req, res) => {
 
   //   check for user permissions here
 
-  const { date1, date2 } = getTodayAndThirtDaysAgo();
+  const { date1, date2 } = getDurationData();
 
   // Call weatherbit API here
   const apiUrl = `https://api.weatherbit.io/v2.0/history/daily?lat=${product.lat}&lon=${product.lon}&start_date=${date2}&end_date=${date1}&key=${process.env.WEATHER_API_KEY}`;
