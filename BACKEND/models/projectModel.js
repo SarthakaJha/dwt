@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema(
   {
@@ -9,7 +9,7 @@ const projectSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: [true, "Please add project name"],
+      required: [true, "Project Name is a must"],
     },
     isClosed: {
       type: Boolean,

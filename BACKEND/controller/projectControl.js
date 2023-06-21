@@ -1,8 +1,8 @@
-const asyncHandler = require("express-async-handler");
-const Project = require("../models/projectModel");
+import asyncHandler from "express-async-handler";
+import Project from "../models/projectModel.js";
 
 // Create a new project
-const createProject = asyncHandler(async (req, res) => {
+export const createProject = asyncHandler(async (req, res) => {
   const { name } = req.body;
   
   if (!name) {
@@ -19,14 +19,14 @@ const createProject = asyncHandler(async (req, res) => {
 });
 
 // Get all projects of a user
-const getProjects = asyncHandler(async (req, res) => {
+export const getProjects = asyncHandler(async (req, res) => {
   const projects = await Project.find({ user: req.user.id });
 
   res.status(200).json(projects);
 });
 
 // Get a specific project by ID
-const getProject = asyncHandler(async (req, res) => {
+export const getProject = asyncHandler(async (req, res) => {
   const project = await Project.findById(req.params.id);
 
   if (!project) {
@@ -43,13 +43,13 @@ const getProject = asyncHandler(async (req, res) => {
 });
 
 // Generate a report for a project
-const generateReport = asyncHandler(async (req, res) => {
+export const generateReport = asyncHandler(async (req, res) => {
   // Implementation for generating a project report
 });
 
-module.exports = {
-  createProject,
-  getProjects,
-  getProject,
-  generateReport,
-};
+// module.exports = {
+//   createProject,
+//   getProjects,
+//   getProject,
+//   generateReport,
+// };

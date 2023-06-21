@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const regularReportSchema = new mongoose.Schema({
   irradiance: {
@@ -46,7 +46,7 @@ const productSchema = new mongoose.Schema(
       type: String, // North,South,East,West {try to have enum values}
       required: [true, "Please add an orientation"],
     },
-    dailyReport: [regularReportSchemaReportSchema],
+    dailyReport: [regularReportSchema],
     isClosed: {
       type: Boolean,
       default: false,
@@ -56,5 +56,4 @@ const productSchema = new mongoose.Schema(
 );
 
 const Product = mongoose.model("Product", productSchema);
-
-module.exports = Product;
+export default Product;

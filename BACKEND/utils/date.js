@@ -17,7 +17,7 @@ const formatDate = (date) => {
    *   - today: The formatted today's date.
    *   - thirtyDaysAgo: The formatted date 30 days ago.
    */
-  const getDurationData = () => {
+  const checkDuration = () => {
     const today = new Date();
     const currentHour = today.getHours();
   
@@ -36,6 +36,6 @@ const formatDate = (date) => {
   };
   
   
-  module.exports = {
-    getDurationData,
-  };
+export default 
+checkDuration
+  ;
