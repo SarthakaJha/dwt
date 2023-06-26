@@ -5,6 +5,42 @@ import Project from "../models/projectModel.js";
 import  checkDuration  from "../utils/date.js";
 import getEnergyData  from "../utils/WeatherData.js"
 
+// check if usable
+/*
+async function findProduct(req, res) {
+  const { projectId, id } = req.params;
+
+  const project = await Project.findById(projectId);
+  if (!project) {
+    res.status(404);
+    throw new Error("Project not found");
+  }
+
+  const product = await Product.findById(
+    { _id: id, project: projectId },
+    { dailyReport: 0 }
+  );
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  // Check if user has access to the project
+  if (req.user.id.toString() !== project.user.toString()) {
+    res.status(401);
+    throw new Error("User not authorized to access this project");
+  }
+
+  // Check if product is already closed
+  if (product.isClosed) {
+    throw new Error("Product is now inactive");
+  }
+}
+
+*/
+
+
+
 export const createProduct = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
 
@@ -70,23 +106,23 @@ export const fetchProduct = asyncHandler(async (req, res) => {
 
 export const updateProductdata = asyncHandler(async (req, res) => {
    // Check if project and the product actually exist
-   const { projectId, id } = req.params;
+  const { projectId, id } = req.params;
 
-   const project = await Project.findById(projectId);
-   if (!project) {
-     res.status(404);
-     throw new Error("Project not found");
-   }
- 
-   const product = await Product.findById(
-     { _id: id, project: projectId },
-     { dailyReport: 0 }
-   );
-   if (!product) {
-     res.status(404);
-     throw new Error("Product not found");
-   }
- 
+  const project = await Project.findById(projectId);
+  if (!project) {
+    res.status(404);
+    throw new Error("Project not found");
+  }
+
+  const product = await Product.findById(
+    { _id: id, project: projectId },
+    { dailyReport: 0 }
+  );
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
    // Check if user has access to the project
    if (req.user.id.toString() !== project.user.toString()) {
      res.status(401);
@@ -96,38 +132,38 @@ export const updateProductdata = asyncHandler(async (req, res) => {
    // Check if product is already closed
    if (product.isClosed) {
      throw new Error(
-       "Product is already closed. You cannot do any more changes to this product."
+       "Product is now inactive"
      );
    }
  
-   const { name, lat, lon, tilt, orientation } = req.body;
-   if (!name || !lat || !lon || !tilt || !orientation) {
-     res.status(400);
-     throw new Error("Please enter all fields");
+  const { name, lat, lon, angle, direction } = req.body;
+  if (!name || !lat || !lon || !angle || !direction) {
+    res.status(400);
+    throw new Error("Please enter all fields");
    }
  
    const response = await Product.findOneAndUpdate(
-     { _id: id },
-     {
-       $set: {
+    { _id: id },
+    {
+      $set: {
         project: projectId,
-        name: name,
-        lat: lat,
-        lon: lon,
-        tilt: tilt,
-        orientation: orientation,
+        name,
+        lat,
+        lon,
+        angle,
+        direction,
       },
     },
     {
-    returnOriginal: false,
-    projection: { dailyReport: 0 },
+      new: true,
+      projection: { dailyReport: 0 },
     }
-   );
+  );
  
    res.status(200).json(response);
 });
 
-export const generateProductReport = asyncHandler(async (req, res) => {
+export const createProductReport = asyncHandler(async (req, res) => {
   const project = await Project.findById(req.params.projectId);
   if (!project) {
     res.status(404);
@@ -140,35 +176,30 @@ export const generateProductReport = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 
+  if (product.isClosed) {
+    res.status(400);
+    throw new Error(
+      "Product report already generated. The Project is now inactive"
+    );
+  }
+
   //   check for user permissions here
 
-  const { date1, date2 } = checkDuration();
-
-  // Call weatherbit API here
-  const apiUrl = `https://api.weatherbit.io/v2.0/history/daily?lat=${product.lat}&lon=${product.lon}&start_date=${date2}&end_date=${date1}&key=${process.env.WEATHER_API_KEY}`;
-  const response = await axios.get(apiUrl);
-  const { data: weatherDataSet } = response.data;
-
-  const dailyReportList = weatherDataSet.map((dataset) => {
-    const { max_dni, datetime, max_temp_ts } = dataset;
-
-    const tempCofficient = new Date(max_temp_ts * 1000);
-    const tempCofficientInHours = tempCofficient.getHours();
-
-    const generatedElectricity =
-      (product.area * max_dni * tempCofficientInHours) / 1000;
-
-    return {
-      irradiance: max_dni,
-      date: datetime,
-      electricity: generatedElectricity,
-    };
-  });
-
-  const updatedProduct = await Product.updateOne(
-    { _id: product._id },
-    { $set: { dailyReport: dailyReportList } }
+  const { date1: end_date, date2: start_date } = checkDuration();
+  console.log('end_date:', end_date);
+  console.log('start_date:', start_date);
+  
+  const dailyReportList = await getEnergyData(
+    product.lat,
+    product.lon,
+    start_date,
+    end_date,
+    product.area
   );
 
-  res.status(200).json(updatedProduct);
+  res.status(200).json({
+    message:
+      "Report has been generated. Please check your email for more information",
+  });
 });
+

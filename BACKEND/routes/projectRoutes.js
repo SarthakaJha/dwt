@@ -1,23 +1,30 @@
 import express from 'express';
 import {
   createProject,
-  getProjects,
-  getProject,
+  fetchProjects,
+  fetchProject,
+  createProjectReport
 }  from "../controller/projectControl.js";
 import {
   createProduct,
-  generateProductReport,
+  createProductReport,
+  fetchProduct,
+  updateProductdata,
+  
 }  from "../controller/productControl.js";
 import { protect } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // Routes for project
 router.post("/", protect, createProject);
-router.get("/", protect, getProjects);
-router.get("/:id", protect, getProject);
+router.get("/", protect, fetchProjects);
+router.get("/:id", protect, fetchProject);
+router.get("/:id/generate-report",protect,createProjectReport);
 
 // Routes for product in project
 router.post("/:projectId/products", protect, createProduct);
-router.get("/:projectId/products/:id/generate-report", protect, generateProductReport);
+router.get("/:projectId/products/:id", protect, fetchProduct);
+router.get("/:projectId/products/:id/generate-report", protect, createProductReport);
+router.post("/:projectId/products/:id",protect,updateProductdata);
 
 export default router;

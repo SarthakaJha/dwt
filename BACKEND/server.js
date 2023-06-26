@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 app.use(cookieParser());
 
 app.use('/api/users', userRoutes);
-// app.use("/api/projects", projectRoutes);
+app.use("/api/projects", projectRoutes);
 
 if (process.env.NODE_ENV === 'production') {
   const __dirname = path.resolve();
