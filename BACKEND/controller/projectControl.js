@@ -5,6 +5,7 @@ import  checkDuration  from "../utils/date.js";
 import getEnergyData  from "../utils/WeatherData.js"
 import WeatherData from "../utils/WeatherData.js";
 import ModifiedDate from "../utils/date.js"
+import Convertor from "../utils/Convertor.js";
 // Create a new project
 export const createProject = asyncHandler(async (req, res) => {
   const { name } = req.body;
@@ -135,7 +136,7 @@ export const createProjectReport = asyncHandler(async (req, res) => {
   const weatherDataList = await WeatherData(productLocations);
   weatherDataList.forEach(async (weatherData) => {
     const filename = weatherData.name + ".csv";
-    const filepath = convertJSONToCSV(weatherData.data, filename);
+    const filepath = Convertor(weatherData.data, filename);
     attachmentList.push({ filename: filename, path: filepath });
 
     // Update product report data and close the product
