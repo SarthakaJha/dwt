@@ -1,5 +1,5 @@
 import axios from "axios";
-import checkDuration from "./date.js";
+import verifyDate from "./date.js";
 
 const WEATHER_API_URL = "https://api.weatherbit.io/v2.0/history/daily";
 
@@ -17,13 +17,13 @@ const getEnergyData = async (lat, lon, start, end, area = 10) => {
 
       const tempCofficient = new Date(max_temp_ts * 1000);
       const tempCofficientInHours = tempCofficient.getHours();
-      const generatedElectricity =
+      const calculatedElectricity =
         (area * max_dni * tempCofficientInHours) / 1000;
 
       dailyReportList.push({
         irradiance: max_dni,
         date: datetime,
-        electricity: generatedElectricity,
+        electricity: calculatedElectricity,
       });
     });
 
@@ -33,8 +33,8 @@ const getEnergyData = async (lat, lon, start, end, area = 10) => {
   }
 };
 
-async function getWeatherData(location) {
-  const { date1: end_date, date2: start_date } = checkDuration();
+async function getWeather(location) {
+  const { date1: end_date, date2: start_date } = verifyDate();
   const { _id, name, lat, lon, area } = location;
   const url =
     WEATHER_API_URL +
@@ -44,23 +44,23 @@ async function getWeatherData(location) {
     const response = await axios.get(url);
     const weatherData = response.data.data;
 
-    const updatedWeatherData = [];
-    weatherData.forEach((wData) => {
-      const { max_dni, datetime, max_temp_ts } = wData;
+    const electricityData = [];
+    weatherData.forEach((Data) => {
+      const { max_dni, datetime, max_temp_ts } = Data;
 
       const tempCofficient = new Date(max_temp_ts * 1000);
       const tempCofficientInHours = tempCofficient.getHours();
-      const generatedElectricity =
+      const calculatedElectricity =
         (area * max_dni * tempCofficientInHours) / 1000;
 
-      updatedWeatherData.push({
+      electricityData.push({
         irradiance: max_dni,
         date: datetime,
-        electricity: generatedElectricity,
+        electricity: calculatedElectricity,
       });
     });
 
-    return { _id: _id, name: name, data: updatedWeatherData };
+    return { _id: _id, name: name, data: electricityData };
   } catch (error) {
     throw new Error(
       `Error retrieving weather data for ${name}:` + error.message
@@ -68,21 +68,21 @@ async function getWeatherData(location) {
   }
 }
 
-const allWeatherinfo = async (locations) => {
-  const weatherDataArray = [];
+const Weatherinfo = async (locations) => {
+  const DataArray = [];
 
   for (const location of locations) {
-    const weatherData = await getWeatherData(location);
-    weatherDataArray.push(weatherData);
+    const weatherData = await getWeather(location);
+    DataArray.push(weatherData);
 
     // Delay before making the next request
     await new Promise((resolve) => setTimeout(resolve, 2000));
   }
 
-  return weatherDataArray;
+  return DataArray;
 };
 
 export default {
   getEnergyData,
-  allWeatherinfo,
+  Weatherinfo,
 };

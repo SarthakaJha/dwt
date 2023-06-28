@@ -4,6 +4,7 @@ import Product from "../models/productModel.js";
 import Project from "../models/projectModel.js";
 import  checkDuration  from "../utils/date.js";
 import getEnergyData  from "../utils/WeatherData.js"
+import SendMail from "../utils/mailler.js"
 
 // check if usable
 /*

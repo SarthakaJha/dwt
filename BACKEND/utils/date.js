@@ -1,9 +1,9 @@
 /**
- * Format a date object to 'YYYY-MM-DD' string format.
- * @param {Date} date - The date object to format.
- * @returns {string} The formatted date string.
+ * Modified a date object to 'YYYY-MM-DD' string Modified.
+ * @param {Date} date - The date object to Modified.
+ * @returns {string} The Modified date string.
  */
-const formatDate = (date) => {
+const ModifiedDate = (date) => {
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "2-digit",
@@ -13,11 +13,11 @@ const formatDate = (date) => {
   
   /**
    * Get today's date and the date 30 days ago.
-   * @returns {Object} An object containing the formatted dates.
-   *   - today: The formatted today's date.
-   *   - thirtyDaysAgo: The formatted date 30 days ago.
+   * @returns {Object} An object containing the Modifiedted dates.
+   *   - today: The Modified today's date.
+   *   - thirtyDaysAgo: The Modified date 30 days ago.
    */
-  const checkDuration = () => {
+  const verifyDate = () => {
     const today = new Date();
     const currentHour = today.getHours();
     
@@ -25,14 +25,15 @@ const formatDate = (date) => {
     const previousDay = new Date(today);
     previousDay.setDate(previousDay.getDate() - (currentHour <= 12 ? 1 : 0));
   
-    const formattedToday = formatDate(today);
-    const formattedThirtyDaysAgo = formatDate(new Date(previousDay.getTime() - 30 * 24 * 60 * 60 * 1000));
+    const Modified_Recently = ModifiedDate(today);
+    const Modified_thirtyDays = ModifiedDate(new Date(previousDay.getTime() - 30 * 24 * 60 * 60 * 1000));
     
-    return { today: formattedToday, thirtyDaysAgo: formattedThirtyDaysAgo };
+    return { today: Modified_Recently, thirtyDaysAgo: Modified_thirtyDays };
   };
   
   
   
 export default 
-checkDuration
+verifyDate
+ModifiedDate
   ;
