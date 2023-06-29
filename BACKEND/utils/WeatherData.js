@@ -3,11 +3,12 @@ import verifyDate from "./date.js";
 
 const WEATHER_API_URL = "https://api.weatherbit.io/v2.0/history/daily";
 
-const getEnergyData = async (lat, lon, start, end, area = 10) => {
+const getEnergyData = async (lat, lon, start, end, area) => {
   try {
     const url =
       WEATHER_API_URL +
       `?lat=${lat}&lon=${lon}&start_date=${start}&end_date=${end}&key=${process.env.WEATHER_API_KEY}`;
+    console.log(url)
     const response = await axios.get(url);
     const { data: weatherDataSet } = response.data;
 
@@ -82,7 +83,9 @@ const Weatherinfo = async (locations) => {
   return DataArray;
 };
 
-export default {
+const weatherManager = {
   getEnergyData,
-  Weatherinfo,
-};
+  Weatherinfo
+}
+
+export default weatherManager

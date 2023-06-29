@@ -8,10 +8,11 @@ const Convertor = (data, filename) => {
   const fieldNames = ["Irradiance", "Electricity", "Date"];
 
   // Define the output directory and path for the CSV file
-  const outDir = "./backend/public/files";
+  const outDir = "./BACKEND/public/files";
   const outPath = path.join(outDir, filename);
 
   const csvData = json2csv(data, { fields, fieldNames });
+
 
   fs.writeFile(outPath, csvData, function (err) {
     if (err) {

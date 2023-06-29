@@ -18,7 +18,7 @@ const router = express.Router();
 // Routes for project
 router.post("/", protect, createProject);
 router.get("/", protect, fetchProjects);
-router.get("/:id", protect, fetchProject);
+router.get("/:id", protect, fetchProject);/*unable to fetch by id*/
 router.get("/:id/generate-report",protect,createProjectReport);
 
 // Routes for product in project

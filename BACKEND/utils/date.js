@@ -4,11 +4,11 @@
  * @returns {string} The Modified date string.
  */
 const ModifiedDate = (date) => {
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 };
   
   /**
@@ -24,10 +24,10 @@ const ModifiedDate = (date) => {
     // If the current hour is before or at 12 PM, consider it as the previous day.
     const previousDay = new Date(today);
     previousDay.setDate(previousDay.getDate() - (currentHour <= 12 ? 1 : 0));
-  
+
     const Modified_Recently = ModifiedDate(today);
     const Modified_thirtyDays = ModifiedDate(new Date(previousDay.getTime() - 30 * 24 * 60 * 60 * 1000));
-    
+
     return { today: Modified_Recently, thirtyDaysAgo: Modified_thirtyDays };
   };
   

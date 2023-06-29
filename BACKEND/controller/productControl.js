@@ -2,8 +2,9 @@ import asyncHandler from "express-async-handler";
 import axios from "axios";
 import Product from "../models/productModel.js";
 import Project from "../models/projectModel.js";
-import  checkDuration  from "../utils/date.js";
-import getEnergyData  from "../utils/WeatherData.js"
+import  verifyDate  from "../utils/date.js";
+import weatherManager  from "../utils/WeatherData.js"
+import Convertor from '../utils/Convertor.js'
 import SendMail from "../utils/mailler.js"
 
 // check if usable
@@ -185,12 +186,11 @@ export const createProductReport = asyncHandler(async (req, res) => {
   }
 
   //   check for user permissions here
-
-  const { date1: end_date, date2: start_date } = checkDuration();
+  const { today: end_date, thirtyDaysAgo: start_date } = verifyDate();
   console.log('end_date:', end_date);
   console.log('start_date:', start_date);
   
-  const dailyReportList = await getEnergyData(
+  const dailyReportList = await weatherManager.getEnergyData(
     product.lat,
     product.lon,
     start_date,
@@ -198,6 +198,27 @@ export const createProductReport = asyncHandler(async (req, res) => {
     product.area
   );
 
+  // res.status(200).json(dailyReportList)
+  // return;
+
+  const filename = product.name + ".csv";
+  const filepath = Convertor(dailyReportList, filename);
+
+  const mailOptions = {
+    to: req.user.email,
+    subject: `Product energy Report for ${product.name}`,
+    text: `Please find the report for ${product.name} in the attachments below`,
+    attachments: {
+      filename: filename,
+      path: filepath,
+    },
+  };
+  await SendMail(mailOptions);
+
+  await Product.updateOne(
+    { _id: product._id },
+    { $set: { dailyReport: dailyReportList, isClosed: true } }
+  );
   res.status(200).json({
     message:
       "Report has been generated. Please check your email for more information",
