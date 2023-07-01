@@ -1,11 +1,12 @@
 import asyncHandler from "express-async-handler";
 import Project from "../models/projectModel.js";
 import SendMail from "../utils/mailler.js";
-import  checkDuration  from "../utils/date.js";
-import getEnergyData  from "../utils/WeatherData.js"
+import checkDuration from "../utils/date.js";
+import getEnergyData from "../utils/WeatherData.js";
 import WeatherData from "../utils/WeatherData.js";
-import ModifiedDate from "../utils/date.js"
+import ModifiedDate from "../utils/date.js";
 import Convertor from "../utils/Convertor.js";
+import Product from "../models/productModel.js";
 // Create a new project
 export const createProject = asyncHandler(async (req, res) => {
   const { name } = req.body;
@@ -98,7 +99,7 @@ export const fetchProject = asyncHandler(async (req, res) => {
 });
 
 // To Delete the Project
-const deleteProject = asyncHandler(async (req, res) => {
+export const deleteProject = asyncHandler(async (req, res) => {
   // Check if project exists
   const project = await Project.findById(req.params.id);
   if (!project) {

@@ -1,3 +1,9 @@
+import { useFormik } from "formik";
+import React, { useEffect, useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import * as yup from "yup";
 import {
   Avatar,
   Box,
@@ -10,24 +16,23 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { register, reset } from "../features/auth/authSlice";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { useFormik } from "formik";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import * as yup from "yup";
-import { login, reset } from "../features/auth/authSlice";
 
 const validationSchema = yup.object({
+  name: yup.string().required("Required"),
   email: yup.string().email("Enter a valid email").required("Required"),
   password: yup
     .string()
     .min(8, "Password should be of minimum 8 characters length")
     .required("Required"),
+  passwordConfirm: yup
+    .string()
+    .oneOf([yup.ref("password"), null], "Passwords must match")
+    .required("Required"),
 });
 
-const Login = () => {
+const RegistrationPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -37,12 +42,19 @@ const Login = () => {
 
   const formik = useFormik({
     initialValues: {
+      name: "",
       email: "",
       password: "",
+      passwordConfirm: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      dispatch(login(values));
+      const userData = {
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      };
+      dispatch(register(userData));
     },
   });
 
@@ -54,7 +66,7 @@ const Login = () => {
     if (user) navigate("/");
 
     if (isSuccess) {
-      toast.success("User logged in successfully");
+      toast.success("User registered successfully");
       navigate("/");
     }
 
@@ -76,14 +88,27 @@ const Login = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Login
+          Register
         </Typography>
         <Box
           component="form"
-          onSubmit={formik.handleSubmit}
           noValidate
-          sx={{ mt: 1 }}
+          onSubmit={formik.handleSubmit}
+          sx={{ mt: 3 }}
         >
+          <TextField
+            required
+            fullWidth
+            id="name"
+            name="name"
+            label="Name"
+            value={formik.values.name}
+            onChange={formik.handleChange}
+            error={formik.touched.name && Boolean(formik.errors.name)}
+            helperText={formik.touched.name && formik.errors.name}
+            autoFocus
+            margin="normal"
+          />
           <TextField
             required
             fullWidth
@@ -92,9 +117,8 @@ const Login = () => {
             label="Email Address"
             value={formik.values.email}
             onChange={formik.handleChange}
-            error={formik.touched.email && formik.errors.email}
+            error={formik.touched.email && Boolean(formik.errors.email)}
             helperText={formik.touched.email && formik.errors.email}
-            autoFocus
             margin="normal"
           />
           <TextField
@@ -106,8 +130,26 @@ const Login = () => {
             type="password"
             value={formik.values.password}
             onChange={formik.handleChange}
-            error={formik.touched.password && formik.errors.password}
+            error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
+            margin="normal"
+          />
+          <TextField
+            required
+            fullWidth
+            id="passwordConfirm"
+            name="passwordConfirm"
+            label="Confirm Password"
+            type="password"
+            value={formik.values.passwordConfirm}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.passwordConfirm &&
+              Boolean(formik.errors.passwordConfirm)
+            }
+            helperText={
+              formik.touched.passwordConfirm && formik.errors.passwordConfirm
+            }
             margin="normal"
           />
 
@@ -117,12 +159,12 @@ const Login = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Login
+            Register
           </Button>
           <Grid container>
             <Grid item>
-              <Link component={RouterLink} to="/register" variant="body2">
-                Don't have an account? Sign up
+              <Link component={RouterLink} to="/login" variant="body2">
+                Already have an account? Sign in
               </Link>
             </Grid>
           </Grid>
@@ -132,4 +174,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default RegistrationPage;

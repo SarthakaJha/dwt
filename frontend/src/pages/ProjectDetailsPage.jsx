@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { TextField, Button, Box, Grid, Divider } from "@mui/material";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { useNavigate, useParams } from "react-router-dom";
 
-function AddMoreInput() {
+function ProjectDetailsPage() {
+  const navigate = useNavigate();
+  const { id: projectId } = useParams();
   const [inputList, setInputList] = useState([
     { Product_Name: "", Area: "", Angle: "", Direction: "", lat: "", lon: "" },
   ]);
@@ -21,20 +24,40 @@ function AddMoreInput() {
   };
 
   const handleAddClick = () => {
-    setInputList([...inputList, { Product_Name: "", Area: "", Angle: "", Direction: "", lat: "", lon: "" }]);
+    setInputList([
+      ...inputList,
+      {
+        Product_Name: "",
+        Area: "",
+        Angle: "",
+        Direction: "",
+        lat: "",
+        lon: "",
+      },
+    ]);
   };
 
   const handlePredefinedValue = (index, predefinedValues) => {
     const list = [...inputList];
-    const { Product_Name, Area, Angle, Direction,  lat, lon } = predefinedValues;
-    list[index] = { Product_Name, Area, Angle, Direction,  lat, lon };
+    const { Product_Name, Area, Angle, Direction, lat, lon } = predefinedValues;
+    list[index] = { Product_Name, Area, Angle, Direction, lat, lon };
     setInputList(list);
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start", padding: "20px", paddingBottom: "40px" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-start",
+        padding: "20px",
+        paddingBottom: "40px",
+      }}
+    >
       <Box sx={{ width: "50%" }}>
-        <h5 className="mt-3 mb-4 fw-bold">Material-UI Add Remove Inputs Fields Dynamically</h5>
+        <h5 className="mt-3 mb-4 fw-bold">
+          Material-UI Add Remove Inputs Fields Dynamically
+        </h5>
 
         {inputList.map((x, i) => {
           return (
@@ -107,11 +130,24 @@ function AddMoreInput() {
                   />
                 </Grid>
                 {inputList.length !== 1 && (
-                  <Grid item xs={12} sm={3}>
-                    <Button variant="contained" color="error" onClick={() => handleRemove(i)} size="small" fullWidth>
-                      Remove
-                    </Button>
-                  </Grid>
+                  <>
+                    <Grid item xs={12} sm={3}>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleRemove(i)}
+                        size="small"
+                        fullWidth
+                      >
+                        Remove
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <Button variant="contained" size="small" fullWidth>
+                        Generate Report
+                      </Button>
+                    </Grid>
+                  </>
                 )}
               </Grid>
               <Grid container spacing={2} mt={2}>
@@ -176,17 +212,39 @@ function AddMoreInput() {
 
         <Divider sx={{ marginY: "16px" }} />
 
-        <Grid container>
-          <Grid item xs={12} sm={2} mt={4}>
-            <Button variant="contained" color="success" onClick={handleAddClick} size="small" fullWidth>
+        <Grid container spacing={2}>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleAddClick}
+              size="small"
+              fullWidth
+            >
               Add More
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              size="small"
+              fullWidth
+              onClick={() => {
+                navigate(`/project/${projectId}/graphical-representation`);
+              }}
+            >
+              Graphical representation
             </Button>
           </Grid>
         </Grid>
       </Box>
 
       <Box sx={{ flex: 1, height: "600px", marginLeft: "20px" }}>
-        <MapContainer center={[50.8278, 12.9214]} zoom={4} style={{ height: "100%", width: "100%" }}>
+        <MapContainer
+          center={[50.8278, 12.9214]}
+          zoom={4}
+          style={{ height: "100%", width: "100%" }}
+        >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {inputList.map((x, i) => {
             const { lat, lon } = x;
@@ -202,4 +260,4 @@ function AddMoreInput() {
   );
 }
 
-export default AddMoreInput;
+export default ProjectDetailsPage;

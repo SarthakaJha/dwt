@@ -1,21 +1,25 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import { store } from './app/store';
-import { Provider } from 'react-redux';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import { store } from "./app/store";
+import App from "./App";
+import "./index.css";
 
+import "react-toastify/dist/ReactToastify.css";
+import "leaflet/dist/leaflet.css";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(
+  <Provider store={store}>
+    <App />
+    <ToastContainer
+      position="bottom-center"
+      autoClose={3000}
+      closeOnClick
+      theme="colored"
+    />
+  </Provider>
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-
