@@ -2,3 +2,4 @@ node_modules
 .env
 BACKEND/node_modules
 frontend_old
+frontend_2

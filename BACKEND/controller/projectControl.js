@@ -97,6 +97,32 @@ export const fetchProject = asyncHandler(async (req, res) => {
   res.status(200).json(projectData);
 });
 
+// To Delete the Project
+const deleteProject = asyncHandler(async (req, res) => {
+  // Check if project exists
+  const project = await Project.findById(req.params.id);
+  if (!project) {
+    res.status(404);
+    throw new Error("Project not found");
+  }
+
+  // Check if user allowed to access the project
+  if (req.user.id.toString() !== project.user.toString()) {
+    res.status(401);
+    throw new Error("User not authorized to access this project");
+  }
+
+  // Remove all the products related to the project
+  await Product.deleteMany({ project: project._id });
+  const result = await Project.deleteOne({ _id: project._id });
+  if (result.deletedCount !== 1) {
+    res.status(404);
+    throw new Error("Project not found");
+  }
+
+  res.status(200).json({ _id: project._id });
+});
+
 // Generate a report for a project
 export const createProjectReport = asyncHandler(async (req, res) => {
   // Implementation for generating a project report
